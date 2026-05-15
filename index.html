@@ -44,9 +44,9 @@ body {
 }
 .header h1 { font-size: 18px; font-weight: 600; }
 .header .sub { font-size: 13px; opacity: 0.85; margin-top: 2px; }
-
+ 
 .container { max-width: 700px; margin: 0 auto; padding: 16px; }
-
+ 
 .card {
   background: white;
   border-radius: var(--radius);
@@ -54,7 +54,7 @@ body {
   margin-bottom: 12px;
   box-shadow: var(--shadow);
 }
-
+ 
 .field-label {
   display: block;
   font-size: 13px;
@@ -64,7 +64,7 @@ body {
   letter-spacing: 0.5px;
   margin-bottom: 8px;
 }
-
+ 
 .date-input {
   width: 100%;
   font-size: 18px;
@@ -76,7 +76,7 @@ body {
   color: var(--gray-900);
 }
 .date-input:focus { outline: none; border-color: var(--green-700); }
-
+ 
 .stage-card {
   background: white;
   border-radius: var(--radius);
@@ -110,7 +110,7 @@ body {
 }
 .stage-count.zero { background: var(--gray-300); color: var(--gray-700); }
 .stage-body { padding: 12px 16px; }
-
+ 
 .pillar-textarea {
   width: 100%;
   min-height: 56px;
@@ -128,7 +128,7 @@ body {
   color: var(--gray-500);
   margin-top: 4px;
 }
-
+ 
 .chips {
   display: flex;
   flex-wrap: wrap;
@@ -165,7 +165,7 @@ body {
 }
 .chip.invalid { background: #FFEBEE; color: var(--red); }
 .chip.invalid .x { background: var(--red); }
-
+ 
 .stage-actions { display: flex; gap: 8px; margin-top: 10px; }
 .clear-btn {
   background: none;
@@ -177,7 +177,7 @@ body {
   cursor: pointer;
 }
 .clear-btn:active { background: var(--gray-100); }
-
+ 
 .submit-bar {
   position: fixed;
   bottom: 0; left: 0; right: 0;
@@ -220,7 +220,7 @@ body {
 .submit-btn { flex: 1; background: var(--green-700); color: white; }
 .submit-btn:active { background: var(--green-900); }
 .submit-btn:disabled { background: var(--gray-300); cursor: not-allowed; }
-
+ 
 .toast {
   position: fixed;
   bottom: 90px;
@@ -242,7 +242,7 @@ body {
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 .toast.success { background: var(--green-700); }
 .toast.error   { background: var(--red); }
-
+ 
 .config-banner {
   background: var(--amber);
   color: white;
@@ -251,7 +251,7 @@ body {
   font-size: 13px;
   font-weight: 600;
 }
-
+ 
 /* === MODAL DO REPORT === */
 .modal {
   position: fixed;
@@ -303,7 +303,7 @@ body {
 .copy-btn:active { background: var(--green-900); }
 .back-btn { background: var(--gray-200); color: var(--gray-900); }
 .back-btn:active { background: var(--gray-300); }
-
+ 
 .report-stage {
   background: white;
   border-radius: var(--radius);
@@ -349,7 +349,7 @@ body {
   resize: vertical;
   min-height: 60px;
 }
-
+ 
 .report-pillars {
   border: 1px solid var(--gray-200);
   border-radius: 6px;
@@ -392,7 +392,7 @@ body {
   line-height: 1.4;
 }
 .rp-status:active { background: var(--gray-100); }
-
+ 
 .preview-card {
   background: white;
   border-radius: var(--radius);
@@ -421,7 +421,7 @@ body {
   white-space: pre;
   overflow: auto;
 }
-
+ 
 .empty-state {
   text-align: center;
   padding: 40px 20px;
@@ -434,16 +434,16 @@ body {
 </style>
 </head>
 <body>
-
+ 
 <div id="configBanner" class="config-banner" style="display:none">
   ⚠ Configure a URL do backend no início do arquivo (constante WEB_APP_URL)
 </div>
-
+ 
 <div class="header">
   <h1>Apontamento de Datas — Fundações</h1>
   <div class="sub">DC Pecém · SS&amp;B Construtora</div>
 </div>
-
+ 
 <div class="container">
   <div class="card">
     <label class="field-label" for="dataExec">Data de Execução</label>
@@ -451,7 +451,7 @@ body {
   </div>
   <div id="stages"></div>
 </div>
-
+ 
 <div class="submit-bar">
   <div class="submit-bar-inner">
     <span class="submit-summary" id="summary">Nenhum pilar adicionado</span>
@@ -459,7 +459,7 @@ body {
     <button id="submitBtn" class="submit-btn" onclick="submitForm()" disabled>Enviar</button>
   </div>
 </div>
-
+ 
 <!-- MODAL DO REPORT -->
 <div id="reportModal" class="modal">
   <div class="modal-header">
@@ -482,14 +482,14 @@ body {
     <button class="copy-btn" onclick="copyReport()">📋 Copiar Report</button>
   </div>
 </div>
-
+ 
 <div id="toast" class="toast"></div>
-
+ 
 <script>
 // ============ CONFIG ============
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyl11sxsSfroQmMldWg9AUi09jOQzpbbSerK2f9osmd5AWiHoUYEqV5oTZQALMiU8aq1w/exec";
 // ================================
-
+ 
 const STAGES = [
   { key: "ESCAVACAO",   label: "ESCAVAÇÃO" },
   { key: "MAGRO",       label: "MAGRO" },
@@ -499,7 +499,7 @@ const STAGES = [
   { key: "REATERRO",    label: "REATERRO" },
   { key: "REATERRO_T",  label: "REATERRO_T" },
 ];
-
+ 
 const STAGE_REPORT_INFO = {
   ESCAVACAO:   { emoji: "🕳️", label: "Escavação",                       bold: false },
   MAGRO:       { emoji: "💿", label: "Magro",                            bold: false },
@@ -509,18 +509,18 @@ const STAGE_REPORT_INFO = {
   REATERRO:    { emoji: "🌱", label: "Reaterro – (SSB)",                 bold: false },
   REATERRO_T:  { emoji: "🌱", label: "Reaterro – (ServObra - Terceiro)", bold: false },
 };
-
+ 
 const state = {
   data: new Date().toISOString().slice(0,10),
   lancamentos: {},
 };
 STAGES.forEach(s => state.lancamentos[s.key] = []);
-
+ 
 const reportState = {
   stages: {},
   observacoes: "",
 };
-
+ 
 const STORAGE_KEY = "apontamento_datas_v1";
 function saveState() {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
@@ -537,16 +537,16 @@ function loadState() {
     });
   } catch(e) {}
 }
-
+ 
 document.getElementById("dataExec").value = state.data;
 document.getElementById("dataExec").addEventListener("change", e => {
   state.data = e.target.value;
   saveState();
   if (document.getElementById("reportModal").classList.contains("show")) renderPreview();
 });
-
+ 
 if (!WEB_APP_URL) document.getElementById("configBanner").style.display = "block";
-
+ 
 const stagesEl = document.getElementById("stages");
 STAGES.forEach(s => {
   const card = document.createElement("div");
@@ -570,7 +570,7 @@ STAGES.forEach(s => {
   ta.addEventListener("input", () => parseTextareaLive(s.key));
   ta.addEventListener("blur", () => commitTextarea(s.key));
 });
-
+ 
 function parsePillarIds(str) {
   if (!str) return [];
   return str.split(/[\s,;]+/).map(x => x.trim().toUpperCase()).filter(x => x.length > 0);
@@ -677,11 +677,11 @@ async function submitForm() {
     updateSummary();
   }
 }
-
+ 
 // =========================================================
 // REPORT — Geração para WhatsApp
 // =========================================================
-
+ 
 function openReport() {
   STAGES.forEach(s => commitTextarea(s.key));
   // Sincroniza reportState com todas as etapas (preserva configurações já feitas)
@@ -702,7 +702,7 @@ function openReport() {
   renderPreview();
 }
 function closeReport() { document.getElementById("reportModal").classList.remove("show"); }
-
+ 
 function normalizeDh(raw) {
   if (!raw) return "";
   let s = String(raw).trim().toUpperCase().replace(/\s+/g, "");
@@ -754,7 +754,7 @@ function formatPillarLines(okList, wipList) {
   }
   return out;
 }
-
+ 
 function renderReportBuilder() {
   const wrap = document.getElementById("reportStages");
   wrap.innerHTML = "";
@@ -765,21 +765,21 @@ function renderReportBuilder() {
     const card = document.createElement("div");
     card.className = "report-stage";
     const hasPillars = data.pillars.length > 0;
-
+ 
     if (hasPillars) {
       card.innerHTML = `
         <h3>${info.emoji} ${info.label}</h3>
         <div class="stage-total-hint">${data.pillars.length} pilar(es) lançado(s)</div>
-
+ 
         <label>Locais (DH) — separe por vírgula</label>
         <input type="text" id="locais-${s.key}" value="${escapeHtml(data.locais.join(', '))}" placeholder="Ex: 5, 7  ou  DH-5, DH-7">
-
+ 
         <label>Pilares (toque no ✅/🚶 para alternar status)</label>
         <div class="report-pillars" id="rp-${s.key}"></div>
-
+ 
         <label>Mão de Obra</label>
         <input type="number" id="mo-${s.key}" min="0" value="${escapeHtml(String(data.maoObra))}" placeholder="Ex: 08">
-
+ 
         <label>Equipamentos (um por linha)</label>
         <textarea id="eq-${s.key}" rows="3" placeholder="01 EH&#10;02 CB">${escapeHtml(data.equipamentos)}</textarea>
       `;
@@ -789,9 +789,9 @@ function renderReportBuilder() {
         <div class="stage-total-hint">Sem atividade · sairá no report como "Sem atividade"</div>
       `;
     }
-
+ 
     wrap.appendChild(card);
-
+ 
     if (hasPillars) {
       document.getElementById(`mo-${s.key}`).addEventListener("input", e => {
         data.maoObra = e.target.value; renderPreview();
@@ -814,7 +814,7 @@ function renderReportBuilder() {
     }
   });
 }
-
+ 
 function renderReportPillars(stageKey) {
   const data = reportState.stages[stageKey];
   const wrap = document.getElementById(`rp-${stageKey}`);
@@ -822,11 +822,11 @@ function renderReportPillars(stageKey) {
   data.pillars.forEach(p => {
     const row = document.createElement("div");
     row.className = "report-pillar-row" + (!p.dh ? " unassigned" : "");
-
+ 
     const idSpan = document.createElement("span");
     idSpan.className = "rp-id";
     idSpan.textContent = formatPillarCode(p.id);
-
+ 
     const dhSelect = document.createElement("select");
     dhSelect.className = "rp-dh";
     const noneOpt = document.createElement("option");
@@ -843,7 +843,7 @@ function renderReportPillars(stageKey) {
       row.classList.toggle("unassigned", !p.dh);
       renderPreview();
     });
-
+ 
     const statusBtn = document.createElement("button");
     statusBtn.type = "button";
     statusBtn.className = "rp-status";
@@ -854,35 +854,35 @@ function renderReportPillars(stageKey) {
       statusBtn.textContent = p.status === "ok" ? "✅" : "🚶‍♂️";
       renderPreview();
     });
-
+ 
     row.append(idSpan, dhSelect, statusBtn);
     wrap.appendChild(row);
   });
 }
-
+ 
 document.getElementById("obsInput").addEventListener("input", e => {
   reportState.observacoes = e.target.value;
   renderPreview();
 });
-
+ 
 function generateReport() {
   const dateRaw = document.getElementById("dataExec").value;
   const dateBR = dateRaw ? dateRaw.split("-").reverse().join("/") : "____";
   let out = `📋REPORT DE PRODUÇÃO - FUNDAÇÕES - ${dateBR}\n`;
-
+ 
   STAGES.forEach(s => {
     const stageData = reportState.stages[s.key];
     if (!stageData) return;
     const info = STAGE_REPORT_INFO[s.key];
     const stageName = info.bold ? `*${info.label}*` : info.label;
     out += `${info.emoji} ${stageName}\n`;
-
+ 
     if (stageData.pillars.length === 0) {
       // Etapa sem pilares: estrutura mínima
       out += `Sem atividade\n`;
       return;
     }
-
+ 
     // Agrupa por DH, preservando a ordem em que foram declarados
     const groups = {};
     const orderedKeys = [];
@@ -893,7 +893,7 @@ function generateReport() {
       if (p.status === "ok") groups[key].ok.push(p);
       else groups[key].wip.push(p);
     });
-
+ 
     orderedKeys.forEach(loc => {
       const g = groups[loc];
       if (!g || (g.ok.length === 0 && g.wip.length === 0)) return;
@@ -901,7 +901,7 @@ function generateReport() {
       out += `Local: ${loc}\n`;
       out += formatPillarLines(g.ok, g.wip);
     });
-
+ 
     if (stageData.maoObra !== "" && stageData.maoObra != null) {
       out += `Mão de Obra: ${pad2(stageData.maoObra)}\n`;
     }
@@ -909,17 +909,17 @@ function generateReport() {
     const eq = (stageData.equipamentos || "").trim();
     if (eq) out += eq + "\n";
   });
-
+ 
   const obs = (reportState.observacoes || "").trim();
   out += `\n📌 Observações:\n${obs}`;
   return out;
 }
-
+ 
 function renderPreview() {
   if (!document.getElementById("reportModal").classList.contains("show")) return;
   document.getElementById("preview").value = generateReport();
 }
-
+ 
 async function copyReport() {
   const text = document.getElementById("preview").value;
   if (!text) { showToast("Nada para copiar", "error"); return; }
@@ -935,7 +935,7 @@ async function copyReport() {
     ta.setAttribute("readonly", "");
   }
 }
-
+ 
 // Inicialização
 loadState();
 STAGES.forEach(s => renderChips(s.key));
