@@ -684,10 +684,10 @@ async function submitForm() {
 
 function openReport() {
   STAGES.forEach(s => commitTextarea(s.key));
-  // Sincroniza reportState com pilares atuais (preserva configurações já feitas)
+  // Sincroniza reportState com todas as etapas (preserva configurações já feitas)
+  // Mesmo etapas sem pilares devem aparecer no report como "Sem execução no dia"
   STAGES.forEach(s => {
     const ids = state.lancamentos[s.key];
-    if (ids.length === 0) { delete reportState.stages[s.key]; return; }
     if (!reportState.stages[s.key]) {
       reportState.stages[s.key] = { locais: [], pillars: [], maoObra: "", equipamentos: "" };
     }
@@ -758,52 +758,60 @@ function formatPillarLines(okList, wipList) {
 function renderReportBuilder() {
   const wrap = document.getElementById("reportStages");
   wrap.innerHTML = "";
-  const stagesWithData = STAGES.filter(s => reportState.stages[s.key]);
-  if (stagesWithData.length === 0) {
-    wrap.innerHTML = `<div class="empty-state">Adicione pilares no formulário principal antes de gerar o report.</div>`;
-    return;
-  }
-  stagesWithData.forEach(s => {
+  STAGES.forEach(s => {
     const data = reportState.stages[s.key];
+    if (!data) return;
     const info = STAGE_REPORT_INFO[s.key];
     const card = document.createElement("div");
     card.className = "report-stage";
-    card.innerHTML = `
-      <h3>${info.emoji} ${info.label}</h3>
-      <div class="stage-total-hint">${data.pillars.length} pilar(es) lançado(s)</div>
+    const hasPillars = data.pillars.length > 0;
 
-      <label>Locais (DH) — separe por vírgula</label>
-      <input type="text" id="locais-${s.key}" value="${escapeHtml(data.locais.join(', '))}" placeholder="Ex: 5, 7  ou  DH-5, DH-7">
+    if (hasPillars) {
+      card.innerHTML = `
+        <h3>${info.emoji} ${info.label}</h3>
+        <div class="stage-total-hint">${data.pillars.length} pilar(es) lançado(s)</div>
 
-      <label>Pilares (toque no ✅/🚶 para alternar status)</label>
-      <div class="report-pillars" id="rp-${s.key}"></div>
+        <label>Locais (DH) — separe por vírgula</label>
+        <input type="text" id="locais-${s.key}" value="${escapeHtml(data.locais.join(', '))}" placeholder="Ex: 5, 7  ou  DH-5, DH-7">
 
-      <label>Mão de Obra</label>
-      <input type="number" id="mo-${s.key}" min="0" value="${escapeHtml(String(data.maoObra))}" placeholder="Ex: 08">
+        <label>Pilares (toque no ✅/🚶 para alternar status)</label>
+        <div class="report-pillars" id="rp-${s.key}"></div>
 
-      <label>Equipamentos (um por linha)</label>
-      <textarea id="eq-${s.key}" rows="3" placeholder="01 EH&#10;02 CB">${escapeHtml(data.equipamentos)}</textarea>
-    `;
+        <label>Mão de Obra</label>
+        <input type="number" id="mo-${s.key}" min="0" value="${escapeHtml(String(data.maoObra))}" placeholder="Ex: 08">
+
+        <label>Equipamentos (um por linha)</label>
+        <textarea id="eq-${s.key}" rows="3" placeholder="01 EH&#10;02 CB">${escapeHtml(data.equipamentos)}</textarea>
+      `;
+    } else {
+      card.innerHTML = `
+        <h3>${info.emoji} ${info.label}</h3>
+        <div class="stage-total-hint">Sem atividade · sairá no report como "Sem atividade"</div>
+      `;
+    }
+
     wrap.appendChild(card);
 
-    document.getElementById(`locais-${s.key}`).addEventListener("input", e => {
-      data.locais = parseLocais(e.target.value);
-      if (data.locais.length === 1) {
-        data.pillars.forEach(p => { if (!p.dh) p.dh = data.locais[0]; });
-      } else {
-        const set = new Set(data.locais);
-        data.pillars.forEach(p => { if (p.dh && !set.has(p.dh)) p.dh = ""; });
-      }
+    if (hasPillars) {
+      document.getElementById(`mo-${s.key}`).addEventListener("input", e => {
+        data.maoObra = e.target.value; renderPreview();
+      });
+      document.getElementById(`eq-${s.key}`).addEventListener("input", e => {
+        data.equipamentos = e.target.value; renderPreview();
+      });
+      document.getElementById(`locais-${s.key}`).addEventListener("input", e => {
+        data.locais = parseLocais(e.target.value);
+        if (data.locais.length === 1) {
+          data.pillars.forEach(p => { if (!p.dh) p.dh = data.locais[0]; });
+        } else {
+          const set = new Set(data.locais);
+          data.pillars.forEach(p => { if (p.dh && !set.has(p.dh)) p.dh = ""; });
+        }
+        renderReportPillars(s.key);
+        renderPreview();
+      });
       renderReportPillars(s.key);
-      renderPreview();
-    });
-    document.getElementById(`mo-${s.key}`).addEventListener("input", e => {
-      data.maoObra = e.target.value; renderPreview();
-    });
-    document.getElementById(`eq-${s.key}`).addEventListener("input", e => {
-      data.equipamentos = e.target.value; renderPreview();
-    });
-    renderReportPillars(s.key);
+    }
   });
 }
 
@@ -864,8 +872,16 @@ function generateReport() {
 
   STAGES.forEach(s => {
     const stageData = reportState.stages[s.key];
-    if (!stageData || stageData.pillars.length === 0) return;
+    if (!stageData) return;
     const info = STAGE_REPORT_INFO[s.key];
+    const stageName = info.bold ? `*${info.label}*` : info.label;
+    out += `${info.emoji} ${stageName}\n`;
+
+    if (stageData.pillars.length === 0) {
+      // Etapa sem pilares: estrutura mínima
+      out += `Sem atividade\n`;
+      return;
+    }
 
     // Agrupa por DH, preservando a ordem em que foram declarados
     const groups = {};
@@ -877,9 +893,6 @@ function generateReport() {
       if (p.status === "ok") groups[key].ok.push(p);
       else groups[key].wip.push(p);
     });
-
-    const stageName = info.bold ? `*${info.label}*` : info.label;
-    out += `${info.emoji} ${stageName}\n`;
 
     orderedKeys.forEach(loc => {
       const g = groups[loc];
