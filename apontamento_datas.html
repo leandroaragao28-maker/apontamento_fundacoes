@@ -15,6 +15,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@500;600&display=swap" rel="stylesheet" />
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 :root {
   --bg: #F4F2EC; --paper: #FBFAF6; --paper-2: #F0EDE3;
@@ -70,6 +71,62 @@ input, textarea, select { -webkit-appearance: none; appearance: none; }
 /* DH Card */
 .dh-card { background: var(--paper); border: 1px solid var(--rule); border-radius: 9px;
   padding: 13px 14px; margin-bottom: 12px; box-shadow: var(--shadow); }
+
+/* Operator Card */
+.op-card { background: var(--paper); border: 1px solid var(--rule); border-radius: 9px;
+  padding: 13px 14px; margin-bottom: 12px; box-shadow: var(--shadow); }
+.op-card.missing { border-color: var(--warn); background: rgba(194,161,26,0.06); }
+.op-card .op-title { font-size: 13px; font-weight: 600; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+.op-card select { width: 100%; background: #fff; border: 1px solid var(--rule); border-radius: 6px;
+  padding: 10px 12px; font-size: 14px; min-height: 44px; }
+.op-card select:focus { outline: 0; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(31,61,138,0.12); }
+
+/* Admin link in status bar */
+.admin-link { background: none; border: 0; color: var(--ink-3); font-size: 11.5px;
+  padding: 2px 6px; cursor: pointer; text-decoration: underline; }
+.admin-link:hover { color: var(--ink); }
+
+/* Admin view items */
+.admin-empty { text-align: center; padding: 40px 20px; color: var(--ink-3);
+  background: var(--paper); border: 1px solid var(--rule); border-radius: 9px; box-shadow: var(--shadow); }
+.admin-login-card { background: var(--paper); border: 1px solid var(--rule); border-radius: 9px;
+  padding: 24px; margin-bottom: 12px; box-shadow: var(--shadow); text-align: center; }
+.admin-login-card .title { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+.admin-login-card .help { font-size: 12.5px; color: var(--ink-3); margin-bottom: 16px; }
+.admin-login-card .gbtn { display: inline-block; }
+
+.admin-user { display: flex; align-items: center; gap: 8px; padding: 10px 14px;
+  background: var(--paper-2); border: 1px solid var(--rule-2); border-radius: 7px;
+  font-size: 12.5px; margin-bottom: 12px; }
+.admin-user .who { flex: 1; font-family: 'Geist Mono', monospace; font-size: 12px; color: var(--ink-2); }
+.admin-user button { font-size: 12px; color: var(--ink-3); text-decoration: underline; background: none; border: 0; cursor: pointer; }
+
+.admin-item { background: var(--paper); border: 1px solid var(--rule); border-radius: 9px;
+  margin-bottom: 10px; box-shadow: var(--shadow); overflow: hidden; }
+.admin-item .ai-head { display: flex; align-items: center; gap: 10px; padding: 12px 14px;
+  border-bottom: 1px solid var(--rule-2); }
+.admin-item .ai-date { font-family: 'Geist Mono', monospace; font-weight: 600; font-size: 14px; color: var(--ink); }
+.admin-item .ai-op { flex: 1; font-size: 13px; color: var(--ink-2); }
+.admin-item .ai-time { font-family: 'Geist Mono', monospace; font-size: 10.5px; color: var(--ink-3); }
+.admin-item .ai-body { padding: 12px 14px; }
+.admin-item .ai-resumo { font-size: 13px; color: var(--ink-2); margin-bottom: 8px; }
+.admin-item .ai-total { font-weight: 600; color: var(--ink); }
+.admin-item .ai-detail-toggle { font-size: 12px; color: var(--accent); cursor: pointer;
+  background: none; border: 0; padding: 0; text-decoration: underline; }
+.admin-item .ai-detail { display: none; padding: 10px 12px; background: var(--paper-2);
+  border-radius: 6px; margin-top: 10px; font-family: 'Geist Mono', monospace; font-size: 12px;
+  line-height: 1.6; }
+.admin-item .ai-detail.open { display: block; }
+.admin-item .ai-detail .stage-line { padding: 3px 0; }
+.admin-item .ai-detail .stage-label { font-weight: 600; color: var(--ink); }
+.admin-item .ai-actions { display: flex; gap: 8px; padding: 10px 14px; border-top: 1px solid var(--rule-2);
+  background: var(--paper-2); }
+.admin-item .ai-actions button { flex: 1; padding: 11px; font-size: 13.5px; font-weight: 600;
+  border-radius: 6px; min-height: 42px; }
+.admin-item .ai-reject { background: #fff; border: 1px solid var(--danger); color: var(--danger); }
+.admin-item .ai-reject:active { background: rgba(178,63,42,0.08); }
+.admin-item .ai-approve { background: var(--ok); color: #fff; border: 1px solid var(--ok); }
+.admin-item .ai-approve:active { background: #167a4a; }
 .dh-card .dh-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
 .dh-card .dh-help { font-size: 11px; color: var(--ink-3); margin-bottom: 10px; }
 .dh-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
@@ -219,9 +276,18 @@ input, textarea, select { -webkit-appearance: none; appearance: none; }
       <span class="dot"></span>
       <span id="statusLabel">Planilha conectada</span>
       <span class="meta" id="statusMeta">DC Pecém</span>
+      <button type="button" class="admin-link" onclick="openAdmin()">Admin</button>
     </div>
 
     <div class="body">
+      <!-- Operator Card -->
+      <div class="op-card" id="opCard">
+        <div class="op-title">👷 Operador</div>
+        <select id="operatorSelect">
+          <option value="">Selecione o operador…</option>
+        </select>
+      </div>
+
       <!-- DH Card -->
       <div class="dh-card">
         <div class="dh-title">📍 Locais (DH)</div>
@@ -247,8 +313,23 @@ input, textarea, select { -webkit-appearance: none; appearance: none; }
     </div>
 
     <div class="foot">
-      <button type="button" class="secondary" id="submitBtn" onclick="submitForm()" disabled>Enviar planilha</button>
+      <button type="button" class="secondary" id="submitBtn" onclick="submitForm()" disabled>Enviar p/ aprovação</button>
       <button type="button" class="primary" id="reportBtn" onclick="openPreview()" disabled>Gerar Report</button>
+    </div>
+  </div>
+
+  <!-- ===== ADMIN VIEW ===== -->
+  <div id="viewAdmin" class="view">
+    <div class="head">
+      <button type="button" class="iconbtn" onclick="closeAdmin()" title="Voltar">‹</button>
+      <div class="htext">
+        <div class="h1">Aprovações pendentes</div>
+        <div class="h2" id="adminSubtitle">Acesso restrito</div>
+      </div>
+      <button type="button" class="iconbtn" id="adminRefreshBtn" onclick="refreshPending()" title="Atualizar" style="display:none">↻</button>
+    </div>
+    <div class="body" id="adminBody">
+      <!-- Login or pending list inserted here -->
     </div>
   </div>
 
@@ -278,6 +359,18 @@ input, textarea, select { -webkit-appearance: none; appearance: none; }
 <script>
 // ============ CONFIG ============
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyl11sxsSfroQmMldWg9AUi09jOQzpbbSerK2f9osmd5AWiHoUYEqV5oTZQALMiU8aq1w/exec";
+
+// ⚠ Cole aqui o Client ID gerado no Google Cloud Console (mesmo valor do Code.gs)
+const OAUTH_CLIENT_ID = "SEU_CLIENT_ID.apps.googleusercontent.com";
+
+// ⚠ Lista de operadores autorizados (edite conforme a equipe)
+const OPERATORS = [
+  "João Silva",
+  "Maria Santos",
+  "Pedro Costa",
+  "Antônio Oliveira",
+  "Carlos Pereira",
+];
 // ================================
 
 // Pilares do projeto e mapeamento parcial de DH (do Volumes Fundações)
@@ -305,6 +398,7 @@ function getDhColor(dh) { return DH_COLORS[dh] || "#A8A39A"; }
 // Estado unificado
 const state = {
   data: new Date().toISOString().slice(0,10),
+  operador: "",
   stages: {},          // { stageKey: { pillars: [{id, dh, status}], maoObra: "", equipamentos: "" } }
   commonLocais: [],    // ["DH-01", "DH-02", ...]
   observacoes: "",
@@ -330,6 +424,7 @@ function loadState() {
     if (!raw) return;
     const saved = JSON.parse(raw);
     if (saved.data) state.data = saved.data;
+    if (saved.operador) state.operador = saved.operador;
     if (saved.observacoes) state.observacoes = saved.observacoes;
     if (Array.isArray(saved.commonLocais) && saved.commonLocais.length > 0) state.commonLocais = saved.commonLocais;
     if (saved.stages) {
@@ -741,8 +836,14 @@ async function submitForm() {
   if (!WEB_APP_URL) { showToast("URL do backend não configurada", "error"); return; }
   STAGES.forEach(s => commitTextarea(s.key));
 
-  // Constrói lancamentos só com IDs por etapa, ignorando status "wip"?
-  // Decisão: enviar só os pilares com status "ok" — em andamento não foi concluído ainda
+  if (!state.operador) {
+    showToast("Selecione o operador antes de enviar", "error");
+    document.getElementById("opCard").classList.add("missing");
+    document.getElementById("operatorSelect").focus();
+    return;
+  }
+
+  // Constrói lancamentos só com IDs por etapa, ignorando status "wip"
   const lancamentos = {};
   let total = 0;
   STAGES.forEach(s => {
@@ -762,12 +863,17 @@ async function submitForm() {
   try {
     const res = await fetch(WEB_APP_URL, {
       method: "POST",
-      body: JSON.stringify({ data: state.data, lancamentos }),
+      body: JSON.stringify({
+        action: "submit",
+        data: state.data,
+        operador: state.operador,
+        lancamentos: lancamentos
+      }),
       headers: { "Content-Type": "text/plain;charset=utf-8" },
     });
     const json = await res.json();
     if (!json.ok) throw new Error(json.error || "Erro desconhecido");
-    showToast(`✓ ${json.totalInserted} pilar(es) enviado(s) à planilha`, "success");
+    showToast(`✓ ${total} pilar(es) enviados — aguardando aprovação`, "success");
   } catch (err) {
     showToast("Erro: " + err.message, "error");
   } finally {
@@ -905,6 +1011,224 @@ function showToast(msg, type) {
   t._tm = setTimeout(() => t.className = "toast", 3500);
 }
 
+// ============ OPERADOR ============
+
+function populateOperatorSelect() {
+  const sel = document.getElementById("operatorSelect");
+  sel.innerHTML = '<option value="">Selecione o operador…</option>';
+  OPERATORS.forEach(name => {
+    const o = document.createElement("option");
+    o.value = name;
+    o.textContent = name;
+    if (name === state.operador) o.selected = true;
+    sel.appendChild(o);
+  });
+  sel.addEventListener("change", e => {
+    state.operador = e.target.value;
+    document.getElementById("opCard").classList.toggle("missing", !state.operador);
+    saveState();
+  });
+  document.getElementById("opCard").classList.toggle("missing", !state.operador);
+}
+
+// ============ ADMIN ============
+
+let adminToken = null;
+let adminEmail = null;
+let adminItems = [];
+
+function openAdmin() {
+  document.getElementById("viewEdit").classList.remove("active");
+  document.getElementById("viewAdmin").classList.add("active");
+  if (adminToken) {
+    refreshPending();
+  } else {
+    renderAdminLogin();
+  }
+}
+
+function closeAdmin() {
+  document.getElementById("viewAdmin").classList.remove("active");
+  document.getElementById("viewEdit").classList.add("active");
+}
+
+function renderAdminLogin() {
+  const body = document.getElementById("adminBody");
+  document.getElementById("adminRefreshBtn").style.display = "none";
+  document.getElementById("adminSubtitle").textContent = "Acesso restrito";
+  body.innerHTML = `
+    <div class="admin-login-card">
+      <div class="title">Login necessário</div>
+      <div class="help">Apenas administradores autorizados podem aprovar submissões. Faça login com a conta Google cadastrada.</div>
+      <div id="googleSignInBtn" class="gbtn"></div>
+      ${(OAUTH_CLIENT_ID.indexOf("SEU_CLIENT_ID") === 0)
+        ? '<div class="help" style="margin-top:14px;color:var(--danger)">⚠ OAUTH_CLIENT_ID não configurado no HTML. Edite a constante no início do script.</div>'
+        : ''}
+    </div>
+  `;
+  initGoogleSignIn();
+}
+
+function initGoogleSignIn() {
+  const btnEl = document.getElementById("googleSignInBtn");
+  if (!btnEl) return;
+  if (typeof google === "undefined" || !google.accounts || !google.accounts.id) {
+    setTimeout(initGoogleSignIn, 300);
+    return;
+  }
+  if (OAUTH_CLIENT_ID.indexOf("SEU_CLIENT_ID") === 0) return;
+  try {
+    google.accounts.id.initialize({
+      client_id: OAUTH_CLIENT_ID,
+      callback: handleCredentialResponse,
+      auto_select: false,
+      use_fedcm_for_prompt: true,
+    });
+    google.accounts.id.renderButton(btnEl, {
+      theme: "filled_black",
+      size: "large",
+      text: "signin_with",
+      width: 280,
+    });
+  } catch (err) {
+    console.warn("Google Sign-In init failed:", err);
+  }
+}
+
+function handleCredentialResponse(response) {
+  adminToken = response.credential;
+  try {
+    const parts = adminToken.split(".");
+    const decoded = JSON.parse(atob(parts[1].replace(/-/g, "+").replace(/_/g, "/")));
+    adminEmail = decoded.email;
+  } catch(e) {}
+  refreshPending();
+}
+
+function logoutAdmin() {
+  adminToken = null;
+  adminEmail = null;
+  adminItems = [];
+  if (typeof google !== "undefined" && google.accounts && google.accounts.id) {
+    google.accounts.id.disableAutoSelect();
+  }
+  renderAdminLogin();
+}
+
+async function refreshPending() {
+  if (!adminToken) { renderAdminLogin(); return; }
+  const body = document.getElementById("adminBody");
+  body.innerHTML = `<div class="admin-empty">Carregando…</div>`;
+  document.getElementById("adminRefreshBtn").style.display = "";
+
+  try {
+    const res = await fetch(WEB_APP_URL, {
+      method: "POST",
+      body: JSON.stringify({ action: "list_pending", idToken: adminToken }),
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+    });
+    const json = await res.json();
+    if (!json.ok) throw new Error(json.error || "Erro desconhecido");
+    adminEmail = json.admin;
+    adminItems = json.items || [];
+    renderAdminList();
+  } catch (err) {
+    showToast("Erro: " + err.message, "error");
+    if (/token|autoriz|expirad/i.test(err.message)) {
+      adminToken = null;
+      renderAdminLogin();
+    } else {
+      const body = document.getElementById("adminBody");
+      body.innerHTML = `<div class="admin-empty">Erro ao carregar: ${escapeHtml(err.message)}</div>`;
+    }
+  }
+}
+
+function renderAdminList() {
+  const body = document.getElementById("adminBody");
+  document.getElementById("adminSubtitle").textContent =
+    adminItems.length === 0 ? "Nenhuma pendência" : `${adminItems.length} pendente${adminItems.length>1?"s":""}`;
+
+  let html = `
+    <div class="admin-user">
+      <span class="who">${escapeHtml(adminEmail || "")}</span>
+      <button type="button" onclick="logoutAdmin()">Sair</button>
+    </div>
+  `;
+  if (adminItems.length === 0) {
+    html += `<div class="admin-empty">Nenhuma submissão pendente.</div>`;
+  } else {
+    adminItems.forEach((item, idx) => {
+      const dateBR = item.data ? item.data.split("-").reverse().join("/") : item.data;
+      const ts = item.timestamp ? new Date(item.timestamp).toLocaleString("pt-BR") : "";
+      const detailLines = [];
+      Object.keys(item.payload || {}).forEach(stageKey => {
+        const arr = item.payload[stageKey] || [];
+        if (arr.length === 0) return;
+        const stageInfo = STAGE_REPORT_INFO[stageKey];
+        const label = stageInfo ? stageInfo.label : stageKey;
+        detailLines.push(`<div class="stage-line"><span class="stage-label">${escapeHtml(label)}</span> (${arr.length}): ${escapeHtml(arr.map(id => formatPillarCode(id)).join(", "))}</div>`);
+      });
+      html += `
+        <div class="admin-item" data-id="${escapeHtml(item.id)}">
+          <div class="ai-head">
+            <span class="ai-date">${escapeHtml(dateBR)}</span>
+            <span class="ai-op">${escapeHtml(item.operador)}</span>
+            <span class="ai-time">${escapeHtml(ts)}</span>
+          </div>
+          <div class="ai-body">
+            <div class="ai-resumo"><span class="ai-total">${item.total} pilar(es)</span> — ${escapeHtml(item.resumo)}</div>
+            <button type="button" class="ai-detail-toggle" onclick="toggleDetail(${idx})">Ver pilares ▼</button>
+            <div class="ai-detail" id="ai-detail-${idx}">${detailLines.join("")}</div>
+          </div>
+          <div class="ai-actions">
+            <button type="button" class="ai-reject" onclick="confirmReject('${escapeHtml(item.id)}')">Rejeitar</button>
+            <button type="button" class="ai-approve" onclick="confirmApprove('${escapeHtml(item.id)}')">Aprovar</button>
+          </div>
+        </div>
+      `;
+    });
+  }
+  body.innerHTML = html;
+}
+
+function toggleDetail(idx) {
+  const el = document.getElementById(`ai-detail-${idx}`);
+  if (el) el.classList.toggle("open");
+}
+
+async function confirmApprove(id) {
+  if (!confirm("Aprovar esta submissão? Os pilares irão para a aba LANÇAMENTO.")) return;
+  await processAdminAction("approve", id, "");
+}
+
+async function confirmReject(id) {
+  const obs = prompt("Motivo da rejeição (opcional):");
+  if (obs === null) return; // cancelado
+  await processAdminAction("reject", id, obs || "");
+}
+
+async function processAdminAction(action, id, observacao) {
+  if (!adminToken) { showToast("Sessão expirada, faça login novamente", "error"); renderAdminLogin(); return; }
+  try {
+    const res = await fetch(WEB_APP_URL, {
+      method: "POST",
+      body: JSON.stringify({ action, idToken: adminToken, id, observacao }),
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+    });
+    const json = await res.json();
+    if (!json.ok) throw new Error(json.error || "Erro");
+    showToast(action === "approve" ? "✓ Aprovado" : "✓ Rejeitado", "success");
+    await refreshPending();
+  } catch (err) {
+    showToast("Erro: " + err.message, "error");
+    if (/token|autoriz|expirad/i.test(err.message)) {
+      adminToken = null;
+      renderAdminLogin();
+    }
+  }
+}
+
 // ============ INIT ============
 
 loadState();
@@ -917,6 +1241,7 @@ if (!WEB_APP_URL) {
 }
 renderDhChips();
 buildStageCards();
+populateOperatorSelect();
 STAGES.forEach(s => renderPillarChips(s.key));
 updateSummary();
 
