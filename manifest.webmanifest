@@ -1,8 +1,8 @@
 {
-  "name": "Apontamento Fundações DC Pecém",
-  "short_name": "Apontamento",
-  "description": "Apontamento diário de fundações — DC Pecém / SS&B Construtora",
-  "start_url": "./apontamento_datas.html",
+  "name": "DC Pecém — Apontamentos",
+  "short_name": "DC Pecém",
+  "description": "Apontamentos de produção — DC Pecém / SS&B Construtora",
+  "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "background_color": "#F4F2EC",

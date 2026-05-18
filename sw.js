@@ -4,6 +4,7 @@
 const CACHE_NAME = "apontamento-v4";
 const FILES_TO_CACHE = [
   "./",
+  "./index.html",
   "./apontamento_datas.html",
   "./manifest.webmanifest",
   "./icon-192.png",
@@ -48,9 +49,9 @@ self.addEventListener("fetch", event => {
         }
         return response;
       }).catch(() => {
-        // Offline e sem cache: retorna a página principal para nav requests
+        // Offline e sem cache: retorna o hub para nav requests
         if (event.request.mode === "navigate") {
-          return caches.match("./apontamento_datas.html");
+          return caches.match("./index.html");
         }
       });
     })

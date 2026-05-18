@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="theme-color" content="#FBFAF6">
+  <title>DC Pecém — Apontamentos</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper: #FBFAF6;
+      --paper-2: #F4F2EC;
+      --ink: #0E0F10;
+      --ink-2: #5B5B5F;
+      --ink-3: #828287;
+      --accent: #1F3D8A;
+      --ok: #1E7F4B;
+      --warn: #C2A11A;
+      --rule: #E5E1D5;
+      --rule-2: #EFEBE0;
+      --shadow: 0 1px 2px rgba(60,60,67,0.04), 0 4px 12px rgba(60,60,67,0.04);
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body { margin: 0; padding: 0; background: var(--paper-2); color: var(--ink);
+      font-family: 'Geist', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-font-smoothing: antialiased; }
+    .app { max-width: 480px; margin: 0 auto; min-height: 100vh; display: flex;
+      flex-direction: column; background: var(--paper-2); }
+
+    /* Header */
+    .head { display: flex; align-items: center; gap: 12px; padding: 18px 16px 14px;
+      border-bottom: 1px solid var(--rule); background: var(--paper-2); }
+    .head .ico { font-size: 26px; line-height: 1; flex-shrink: 0; }
+    .head .htext { flex: 1; min-width: 0; }
+    .head .h1 { font-size: 17px; font-weight: 700; color: var(--ink); line-height: 1.2; }
+    .head .h2 { font-size: 11.5px; color: var(--ink-3); margin-top: 3px; line-height: 1.3; }
+
+    /* Body */
+    .body { flex: 1; padding: 12px 14px 80px; }
+
+    /* Section title */
+    .section-title { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--ink-3); font-weight: 600; margin: 14px 0 8px; padding: 0 4px; }
+    .section-title:first-child { margin-top: 4px; }
+
+    /* Contract card */
+    .contract-card { display: block; background: var(--paper); border: 1px solid var(--rule);
+      border-radius: 10px; padding: 13px 14px; margin-bottom: 9px; text-decoration: none;
+      color: inherit; box-shadow: var(--shadow);
+      transition: transform 0.1s ease, border-color 0.1s ease; }
+    .contract-card.active:active { transform: scale(0.985); border-color: var(--accent); }
+    .contract-card.pending { opacity: 0.62; cursor: not-allowed; }
+
+    .cc-head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+    .cc-emoji { font-size: 22px; line-height: 1; flex-shrink: 0; width: 26px; text-align: center; }
+    .cc-title { flex: 1; font-size: 14.5px; font-weight: 600; color: var(--ink);
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .cc-status { font-size: 9.5px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.05em; padding: 3px 7px; border-radius: 4px;
+      font-family: 'Geist Mono', monospace; flex-shrink: 0; }
+    .cc-status.active { background: rgba(30, 127, 75, 0.1); color: var(--ok);
+      border: 1px solid rgba(30, 127, 75, 0.22); }
+    .cc-status.pending { background: var(--paper-2); color: var(--ink-3);
+      border: 1px solid var(--rule); }
+
+    .cc-body { font-size: 12px; color: var(--ink-3); padding-left: 36px; line-height: 1.4; }
+    .cc-pattern { font-family: 'Geist Mono', monospace; color: var(--ink-2);
+      font-weight: 500; font-size: 11px; }
+
+    /* Footer */
+    .foot { padding: 14px 14px; border-top: 1px solid var(--rule); background: var(--paper-2);
+      font-size: 10.5px; color: var(--ink-3); text-align: center;
+      font-family: 'Geist Mono', monospace; letter-spacing: 0.04em; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="head">
+      <div class="ico">📂</div>
+      <div class="htext">
+        <div class="h1">DC Pecém</div>
+        <div class="h2">Apontamentos de produção · SS&amp;B Construtora</div>
+      </div>
+    </div>
+
+    <div class="body">
+
+      <div class="section-title">Apontamentos ativos</div>
+
+      <a class="contract-card active" href="apontamento_datas.html">
+        <div class="cc-head">
+          <span class="cc-emoji">🏗️</span>
+          <span class="cc-title">Fundações</span>
+          <span class="cc-status active">ATIVO</span>
+        </div>
+        <div class="cc-body">
+          <span class="cc-pattern">PADRÃO A</span> · 1.059 pilares · 7 etapas
+        </div>
+      </a>
+
+      <div class="section-title">Em desenvolvimento</div>
+
+      <div class="contract-card pending">
+        <div class="cc-head">
+          <span class="cc-emoji">🟫</span>
+          <span class="cc-title">Vigas Baldrames</span>
+          <span class="cc-status pending">EM BREVE</span>
+        </div>
+        <div class="cc-body">
+          <span class="cc-pattern">PADRÃO A</span> · Extensão das fundações
+        </div>
+      </div>
+
+      <div class="contract-card pending">
+        <div class="cc-head">
+          <span class="cc-emoji">🚜</span>
+          <span class="cc-title">Terraplanagem Fase 01</span>
+          <span class="cc-status pending">EM BREVE</span>
+        </div>
+        <div class="cc-body">
+          <span class="cc-pattern">PADRÃO B</span> · Quantidade contínua por frente
+        </div>
+      </div>
+
+      <div class="contract-card pending">
+        <div class="cc-head">
+          <span class="cc-emoji">🚜</span>
+          <span class="cc-title">Terraplanagem Fase 02 e 03</span>
+          <span class="cc-status pending">EM BREVE</span>
+        </div>
+        <div class="cc-body">
+          <span class="cc-pattern">PADRÃO B</span> · Quantidade contínua por frente
+        </div>
+      </div>
+
+      <div class="contract-card pending">
+        <div class="cc-head">
+          <span class="cc-emoji">⏱️</span>
+          <span class="cc-title">Hora × Homem e Hora × Máquina</span>
+          <span class="cc-status pending">EM BREVE</span>
+        </div>
+        <div class="cc-body">
+          <span class="cc-pattern">PADRÃO C</span> · Recursos consumidos por dia
+        </div>
+      </div>
+
+      <div class="contract-card pending">
+        <div class="cc-head">
+          <span class="cc-emoji">🔲</span>
+          <span class="cc-title">Piso de Concreto (Canteiros)</span>
+          <span class="cc-status pending">EM BREVE</span>
+        </div>
+        <div class="cc-body">
+          <span class="cc-pattern">PADRÃO A</span> · Pisos por unidade
+        </div>
+      </div>
+
+      <div class="contract-card pending">
+        <div class="cc-head">
+          <span class="cc-emoji">🪨</span>
+          <span class="cc-title">Execução de reforço (Rachão)</span>
+          <span class="cc-status pending">EM BREVE</span>
+        </div>
+        <div class="cc-body">
+          <span class="cc-pattern">PADRÃO B</span> · Volume aplicado por frente
+        </div>
+      </div>
+
+      <div class="contract-card pending">
+        <div class="cc-head">
+          <span class="cc-emoji">⚡</span>
+          <span class="cc-title">Enterrados</span>
+          <span class="cc-status pending">EM BREVE</span>
+        </div>
+        <div class="cc-body">
+          <span class="cc-pattern">A + B</span> · Caixas / poços + metragem
+        </div>
+      </div>
+
+    </div>
+
+    <div class="foot">
+      DC PECÉM · SS&amp;B CONSTRUTORA
+    </div>
+  </div>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>
