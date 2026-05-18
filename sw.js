@@ -1,11 +1,12 @@
 // Service Worker — Apontamento de Fundações DC Pecém
 // Cache simples para permitir instalação como PWA e funcionamento offline básico.
 
-const CACHE_NAME = "apontamento-v4";
+const CACHE_NAME = "apontamento-v5";
 const FILES_TO_CACHE = [
   "./",
   "./index.html",
   "./apontamento_datas.html",
+  "./terraplanagem.html",
   "./manifest.webmanifest",
   "./icon-192.png",
   "./icon-512.png",

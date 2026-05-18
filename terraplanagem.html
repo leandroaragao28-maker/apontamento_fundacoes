@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="theme-color" content="#FBFAF6">
+  <title>Terraplanagem — DC Pecém</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper: #FBFAF6;
+      --paper-2: #F4F2EC;
+      --ink: #0E0F10;
+      --ink-2: #5B5B5F;
+      --ink-3: #828287;
+      --accent: #1F3D8A;
+      --ok: #1E7F4B;
+      --warn: #C2A11A;
+      --danger: #B23F2A;
+      --rule: #E5E1D5;
+      --rule-2: #EFEBE0;
+      --shadow: 0 1px 2px rgba(60,60,67,0.04), 0 4px 12px rgba(60,60,67,0.04);
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body { margin: 0; padding: 0; background: var(--paper-2); color: var(--ink);
+      font-family: 'Geist', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-font-smoothing: antialiased; }
+    .app { max-width: 480px; margin: 0 auto; min-height: 100vh; background: var(--paper-2);
+      display: flex; flex-direction: column; }
+    .view { display: none; flex: 1; flex-direction: column; }
+    .view.active { display: flex; }
+
+    /* Header */
+    .head { display: flex; align-items: center; gap: 10px; padding: 14px 14px 12px;
+      border-bottom: 1px solid var(--rule); background: var(--paper-2); }
+    .head .iconbtn { padding: 7px 12px; border: 1px solid var(--rule); border-radius: 6px;
+      background: #fff; font-size: 18px; line-height: 1; min-width: 38px; min-height: 38px;
+      display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    .head .iconbtn:active { background: var(--paper-2); }
+    .head .htext { flex: 1; min-width: 0; }
+    .head .h1 { font-size: 16px; font-weight: 700; color: var(--ink); line-height: 1.2;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .head .h2 { font-size: 11.5px; color: var(--ink-3); margin-top: 2px; }
+
+    /* Status bar */
+    .statusbar { display: flex; align-items: center; gap: 8px; padding: 8px 14px;
+      background: var(--paper-2); border-bottom: 1px solid var(--rule-2); font-size: 11.5px;
+      color: var(--ink-3); }
+    .statusbar .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); }
+    .statusbar .meta { margin-left: auto; font-family: 'Geist Mono', monospace; font-size: 10.5px;
+      letter-spacing: 0.04em; text-transform: uppercase; }
+
+    /* Body */
+    .body { flex: 1; padding: 12px 14px 90px; overflow-y: auto; }
+
+    /* Op-card (date + apontador) */
+    .op-card { background: var(--paper); border: 1px solid var(--rule); border-radius: 9px;
+      padding: 12px 14px; margin-bottom: 12px; box-shadow: var(--shadow); }
+    .op-card.missing { border-color: var(--warn); background: rgba(194,161,26,0.06); }
+    .op-card .op-row { display: grid; grid-template-columns: minmax(125px, 0.8fr) 1.2fr; gap: 10px; }
+    .op-card .op-field { display: flex; flex-direction: column; gap: 4px; }
+    .op-card .op-label { font-size: 11px; font-weight: 600; color: var(--ink-2);
+      display: flex; align-items: center; gap: 4px; }
+    .op-card .op-input { width: 100%; background: #fff; border: 1px solid var(--rule);
+      border-radius: 6px; padding: 9px 11px; font-size: 14px; min-height: 42px;
+      font-family: inherit; }
+    .op-card input.op-input { font-family: 'Geist Mono', monospace; }
+    .op-card .op-input:focus { outline: 0; border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(31,61,138,0.12); }
+
+    /* Activity card */
+    .activity-card { background: var(--paper); border: 1px solid var(--rule); border-radius: 10px;
+      margin-bottom: 11px; box-shadow: var(--shadow); overflow: hidden; }
+    .acard-head { padding: 11px 14px; background: var(--paper-2);
+      border-bottom: 1px solid var(--rule-2); display: flex; align-items: center; gap: 9px; }
+    .acard-emoji { font-size: 20px; line-height: 1; flex-shrink: 0; }
+    .acard-title { font-size: 13.5px; font-weight: 600; color: var(--ink); line-height: 1.3; }
+    .acard-body { padding: 12px 14px; }
+    .field-row { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
+    .field-row:last-child { margin-bottom: 0; }
+    .field-row label { font-size: 11px; color: var(--ink-3); font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.03em;
+      display: flex; align-items: center; gap: 5px; }
+    .field-row .field-emoji { font-size: 13px; }
+    .field-row input { width: 100%; background: #fff; border: 1px solid var(--rule);
+      border-radius: 5px; padding: 9px 11px; font-size: 14px; min-height: 40px;
+      font-family: inherit; }
+    .field-row input[type="number"] { font-family: 'Geist Mono', monospace; text-align: left;
+      -moz-appearance: textfield; }
+    .field-row input[type="number"]::-webkit-outer-spin-button,
+    .field-row input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    .field-row input:focus { outline: 0; border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(31,61,138,0.12); }
+    .field-row .field-unit { font-size: 11px; color: var(--ink-3); font-family: 'Geist Mono', monospace; }
+
+    /* Obs card */
+    .obs-card { background: var(--paper); border: 1px solid var(--rule); border-radius: 9px;
+      padding: 14px; margin-bottom: 12px; box-shadow: var(--shadow); }
+    .obs-card label { font-size: 11.5px; color: var(--ink-3); text-transform: uppercase;
+      letter-spacing: 0.04em; font-weight: 600; display: block; margin-bottom: 7px; }
+    .obs-card textarea { width: 100%; background: #fff; border: 1px solid var(--rule);
+      border-radius: 5px; padding: 10px 12px; font-size: 13.5px; min-height: 74px;
+      resize: vertical; font-family: inherit; }
+    .obs-card textarea:focus { outline: 0; border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(31,61,138,0.12); }
+
+    /* Clear all button */
+    .clear-all { width: 100%; padding: 10px; background: transparent; border: 1px solid var(--rule);
+      border-radius: 6px; font-size: 12.5px; color: var(--ink-3); cursor: pointer;
+      font-family: inherit; }
+    .clear-all:active { background: var(--paper); color: var(--danger); border-color: var(--danger); }
+
+    /* Footer */
+    .foot { padding: 12px 14px; border-top: 1px solid var(--rule); background: var(--paper-2);
+      display: flex; gap: 8px; position: sticky; bottom: 0; z-index: 5; }
+    .foot button { flex: 1; padding: 13px; font-size: 14px; font-weight: 600;
+      border-radius: 7px; border: 1px solid var(--rule); cursor: pointer; font-family: inherit;
+      min-height: 46px; }
+    .foot .primary { background: var(--ink); color: #fff; border-color: var(--ink); }
+    .foot .primary:active { background: #2a2b2e; }
+    .foot .secondary { background: #fff; color: var(--ink); }
+    .foot .secondary:active { background: var(--paper-2); }
+
+    /* Preview view */
+    .preview-wrap { flex: 1; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+    .preview-info { font-size: 12px; color: var(--ink-3); padding: 8px 10px;
+      background: var(--paper); border-radius: 6px; border: 1px solid var(--rule-2);
+      font-family: 'Geist Mono', monospace; }
+    .preview-wrap textarea { flex: 1; width: 100%; background: var(--paper);
+      border: 1px solid var(--rule); border-radius: 8px; padding: 14px;
+      font-family: 'Geist Mono', monospace; font-size: 13px; line-height: 1.55;
+      resize: none; min-height: 50vh; color: var(--ink); }
+
+    /* Toast */
+    .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px);
+      background: var(--ink); color: #fff; padding: 10px 16px; border-radius: 22px; font-size: 13px;
+      opacity: 0; transition: opacity 0.2s, transform 0.2s; pointer-events: none; z-index: 100;
+      max-width: 90vw; text-align: center; box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .toast.error { background: var(--danger); }
+    .toast.success { background: var(--ok); }
+  </style>
+</head>
+<body>
+
+  <div class="app">
+
+    <!-- ===== EDIT VIEW ===== -->
+    <div id="viewEdit" class="view active">
+      <div class="head">
+        <button type="button" class="iconbtn" onclick="window.location.href='index.html'" title="Voltar para o hub">‹</button>
+        <div class="htext">
+          <div class="h1">Terraplanagem Fase 01</div>
+          <div class="h2" id="headSubtitle">DC1 · Apontamento diário</div>
+        </div>
+      </div>
+
+      <div class="statusbar">
+        <span class="dot"></span>
+        <span>Modo coleta</span>
+        <span class="meta">DC Pecém</span>
+      </div>
+
+      <div class="body">
+        <!-- Data + Apontador -->
+        <div class="op-card" id="opCard">
+          <div class="op-row">
+            <div class="op-field">
+              <label class="op-label" for="dataExec">📅 Data</label>
+              <input type="date" id="dataExec" class="op-input">
+            </div>
+            <div class="op-field">
+              <label class="op-label" for="apontadorSelect">👷 Apontador</label>
+              <select id="apontadorSelect" class="op-input">
+                <option value="">Selecione…</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Activity cards rendered by JS -->
+        <div id="activities"></div>
+
+        <!-- Observations -->
+        <div class="obs-card">
+          <label for="obsInput">📌 Observações gerais</label>
+          <textarea id="obsInput" placeholder="Ex: Chuva forte no fim da tarde, equipamento Y em manutenção…"></textarea>
+        </div>
+
+        <button type="button" class="clear-all" onclick="clearAll()">Limpar tudo</button>
+      </div>
+
+      <div class="foot">
+        <button type="button" class="primary" onclick="openPreview()">Gerar Report</button>
+      </div>
+    </div>
+
+    <!-- ===== PREVIEW VIEW ===== -->
+    <div id="viewPreview" class="view">
+      <div class="head">
+        <button type="button" class="iconbtn" onclick="closePreview()" title="Voltar">‹</button>
+        <div class="htext">
+          <div class="h1">Preview do Report</div>
+          <div class="h2">Toque em copiar para enviar no WhatsApp</div>
+        </div>
+      </div>
+      <div class="preview-wrap">
+        <div class="preview-info" id="previewInfo"></div>
+        <textarea id="previewText" readonly></textarea>
+      </div>
+      <div class="foot">
+        <button type="button" class="secondary" onclick="closePreview()">Voltar</button>
+        <button type="button" class="primary" onclick="copyReport()">📋 Copiar texto</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+// ============ CONFIG ============
+
+// ⚠ Lista de apontadores autorizados (edite conforme a equipe de terraplanagem)
+const APONTADORES = [
+  "João Silva",
+  "Maria Santos",
+  "Pedro Costa",
+  "Antônio Oliveira",
+  "Carlos Pereira",
+];
+
+// ⚠ As 5 atividades do contrato — formato definido com o diretor de obras
+const ACTIVITIES = [
+  {
+    key: "CAMADA_VEGETAL",
+    emoji: "🌱",
+    title: "1. Camada Vegetal — Bota Fora Externo",
+    fields: [
+      { key: "local", label: "Local", emoji: "📍", type: "text", placeholder: "Local da execução" },
+      { key: "carradas", label: "Carradas", emoji: "🚛", type: "number" },
+    ]
+  },
+  {
+    key: "MATERIAL_SATURADO",
+    emoji: "💧",
+    title: "2. Material Saturado",
+    fields: [
+      { key: "local", label: "Local", emoji: "📍", type: "text", placeholder: "Local da execução" },
+      { key: "carradas_interno", label: "Carradas interno", emoji: "🚛", type: "number" },
+      { key: "carradas_externo", label: "Carradas externo", emoji: "🚛", type: "number" },
+    ]
+  },
+  {
+    key: "CORTE",
+    emoji: "⛏️",
+    title: "3. Corte",
+    fields: [
+      { key: "local", label: "Local", emoji: "📍", type: "text", placeholder: "Local da execução" },
+      { key: "carradas", label: "Carradas", emoji: "🚛", type: "number" },
+    ]
+  },
+  {
+    key: "ATERRO_JAZIDA",
+    emoji: "🟫",
+    title: "4. Aterro — Material de Jazida",
+    fields: [
+      { key: "local", label: "Local", emoji: "📍", type: "text", placeholder: "Local da execução" },
+      { key: "carradas", label: "Carradas", emoji: "🚛", type: "number" },
+    ]
+  },
+  {
+    key: "SUPRESSAO_MECANIZADA",
+    emoji: "🌳",
+    title: "5. Supressão Mecanizada",
+    fields: [
+      { key: "local", label: "Local", emoji: "📍", type: "text", default: "Rivolides e Portaria Definitiva" },
+      { key: "quantidade_m2", label: "Quantidade", emoji: "📐", type: "number", unit: "m²" },
+    ]
+  }
+];
+
+// ============ STATE ============
+const state = {
+  data: new Date().toISOString().slice(0,10),
+  apontador: "",
+  activities: {},
+  observacoes: "",
+};
+ACTIVITIES.forEach(act => {
+  state.activities[act.key] = {};
+  act.fields.forEach(f => { state.activities[act.key][f.key] = f.default || ""; });
+});
+
+const STORAGE_KEY = "terraplanagem_v1";
+function saveState() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+}
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    const saved = JSON.parse(raw);
+    if (saved.data) state.data = saved.data;
+    if (saved.apontador) state.apontador = saved.apontador;
+    if (saved.observacoes) state.observacoes = saved.observacoes;
+    if (saved.activities) {
+      ACTIVITIES.forEach(act => {
+        if (!saved.activities[act.key]) return;
+        act.fields.forEach(f => {
+          const v = saved.activities[act.key][f.key];
+          if (v !== undefined && v !== null) state.activities[act.key][f.key] = v;
+        });
+      });
+    }
+  } catch(e) { console.warn("loadState falhou:", e); }
+}
+
+// ============ HELPERS ============
+function escapeHtml(s) {
+  return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[c]));
+}
+function pad2(n) {
+  const num = parseInt(n, 10);
+  if (isNaN(num)) return String(n);
+  return num < 10 ? "0" + num : String(num);
+}
+
+// ============ APONTADOR ============
+function populateApontadorSelect() {
+  const sel = document.getElementById("apontadorSelect");
+  sel.innerHTML = '<option value="">Selecione o apontador…</option>';
+  APONTADORES.forEach(name => {
+    const o = document.createElement("option");
+    o.value = name;
+    o.textContent = name;
+    if (name === state.apontador) o.selected = true;
+    sel.appendChild(o);
+  });
+  sel.addEventListener("change", e => {
+    state.apontador = e.target.value;
+    document.getElementById("opCard").classList.toggle("missing", !state.apontador);
+    saveState();
+  });
+  document.getElementById("opCard").classList.toggle("missing", !state.apontador);
+}
+
+// ============ ACTIVITY CARDS ============
+function buildActivityCards() {
+  const wrap = document.getElementById("activities");
+  wrap.innerHTML = "";
+  ACTIVITIES.forEach(act => {
+    const card = document.createElement("div");
+    card.className = "activity-card";
+    const fieldsHtml = act.fields.map(f => {
+      const id = `f-${act.key}-${f.key}`;
+      const v = state.activities[act.key][f.key] || "";
+      const placeholder = f.placeholder ? ` placeholder="${escapeHtml(f.placeholder)}"` : "";
+      const unit = f.unit ? ` <span class="field-unit">(${escapeHtml(f.unit)})</span>` : "";
+      const extraAttrs = f.type === "number" ? ' min="0" inputmode="numeric"' : "";
+      return `
+        <div class="field-row">
+          <label for="${id}"><span class="field-emoji">${f.emoji || ""}</span> ${escapeHtml(f.label)}${unit}</label>
+          <input type="${f.type}" id="${id}" value="${escapeHtml(String(v))}"${placeholder}${extraAttrs} autocomplete="off">
+        </div>
+      `;
+    }).join("");
+    card.innerHTML = `
+      <div class="acard-head">
+        <span class="acard-emoji">${act.emoji}</span>
+        <span class="acard-title">${escapeHtml(act.title)}</span>
+      </div>
+      <div class="acard-body">${fieldsHtml}</div>
+    `;
+    wrap.appendChild(card);
+    // wire inputs
+    act.fields.forEach(f => {
+      const el = card.querySelector(`#f-${act.key}-${f.key}`);
+      el.addEventListener("input", e => {
+        state.activities[act.key][f.key] = e.target.value;
+        saveState();
+      });
+    });
+  });
+}
+
+// ============ CLEAR ALL ============
+function clearAll() {
+  const hasData = ACTIVITIES.some(act =>
+    act.fields.some(f => {
+      const v = state.activities[act.key][f.key];
+      return v !== "" && v !== (f.default || "");
+    })
+  ) || state.observacoes.trim();
+  if (!hasData) return;
+  if (!confirm("Apagar todos os lançamentos e observações?")) return;
+  ACTIVITIES.forEach(act => {
+    act.fields.forEach(f => { state.activities[act.key][f.key] = f.default || ""; });
+  });
+  state.observacoes = "";
+  document.getElementById("obsInput").value = "";
+  buildActivityCards();
+  saveState();
+  showToast("Limpo", "success");
+}
+
+// ============ REPORT ============
+function generateReport() {
+  const dateRaw = state.data || "";
+  const dateBR = dateRaw ? dateRaw.split("-").reverse().join("/") : "____";
+  const blocks = [];
+  blocks.push(`📋 REPORT DIÁRIO DE PRODUÇÃO — DC1 — ${dateBR}`);
+
+  ACTIVITIES.forEach(act => {
+    const data = state.activities[act.key] || {};
+    const filled = act.fields.some(f => {
+      const v = data[f.key];
+      return v !== "" && v !== null && v !== undefined && String(v).trim() !== "";
+    });
+
+    if (!filled) {
+      blocks.push(`${act.emoji} ${act.title}\nSem atividade`);
+      return;
+    }
+
+    const lines = [`${act.emoji} ${act.title}`, ""];
+    act.fields.forEach(f => {
+      const v = data[f.key];
+      const empty = (v === "" || v === null || v === undefined);
+      let display = "";
+      if (!empty) {
+        if (f.type === "number" && f.unit) display = `${v} ${f.unit}`;
+        else if (f.type === "number") display = pad2(v);
+        else display = String(v);
+      }
+      lines.push(`${f.emoji || ""} ${f.label}: ${display}`.trim());
+    });
+    blocks.push(lines.join("\n"));
+  });
+
+  const obs = (state.observacoes || "").trim();
+  if (obs) blocks.push(`📌 Observações:\n${obs}`);
+
+  return blocks.join("\n\n");
+}
+
+// ============ PREVIEW ============
+function openPreview() {
+  if (!state.apontador) {
+    showToast("Selecione o apontador antes de gerar o report", "error");
+    document.getElementById("opCard").classList.add("missing");
+    document.getElementById("apontadorSelect").focus();
+    return;
+  }
+  const text = generateReport();
+  document.getElementById("previewText").value = text;
+  const dateRaw = state.data || "";
+  const dateBR = dateRaw ? dateRaw.split("-").reverse().join("/") : "—";
+  document.getElementById("previewInfo").textContent = `${dateBR} · ${state.apontador}`;
+  document.getElementById("viewEdit").classList.remove("active");
+  document.getElementById("viewPreview").classList.add("active");
+}
+function closePreview() {
+  document.getElementById("viewPreview").classList.remove("active");
+  document.getElementById("viewEdit").classList.add("active");
+}
+async function copyReport() {
+  const text = document.getElementById("previewText").value;
+  try {
+    await navigator.clipboard.writeText(text);
+    showToast("✓ Report copiado", "success");
+  } catch(e) {
+    // Fallback
+    const ta = document.getElementById("previewText");
+    ta.select();
+    document.execCommand("copy");
+    showToast("✓ Report copiado", "success");
+  }
+}
+
+// ============ TOAST ============
+let toastTimer = null;
+function showToast(msg, type) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.className = "toast show" + (type ? " " + type : "");
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.className = "toast" + (type ? " " + type : ""), 2400);
+}
+
+// ============ DATE + OBSERVATIONS ============
+document.getElementById("dataExec").addEventListener("change", e => {
+  state.data = e.target.value;
+  saveState();
+});
+document.getElementById("obsInput").addEventListener("input", e => {
+  state.observacoes = e.target.value;
+  saveState();
+});
+
+// ============ INIT ============
+loadState();
+populateApontadorSelect();
+buildActivityCards();
+document.getElementById("dataExec").value = state.data;
+document.getElementById("obsInput").value = state.observacoes;
+
+// ============ PWA — Service Worker ============
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
+</script>
+
+</body>
+</html>
